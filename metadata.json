@@ -1,0 +1,5 @@
+{
+  "name": "Two Player Snake Clash",
+  "description": "A classic snake game where two players compete on the same board. Player 1 uses Arrow keys and Player 2 uses WASD keys. Grow your snake by eating your own colored beads, but shrink if you eat your opponent's! The last snake standing wins.",
+  "requestFramePermissions": []
+}
