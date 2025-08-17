@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import GameBoard from './components/GameBoard';
 import Scoreboard from './components/Scoreboard';
@@ -110,7 +111,7 @@ function App() {
         if (isSameCoordinates(h1, h2)) {
              if (s1.length > s2.length) return Player.PLAYER_1;
              if (s2.length > s1.length) return Player.PLAYER_2;
-             return null; // Tie results in game over for both
+             return Player.TIE;
         }
         // Snake-on-snake collision
         for (const segment of s2) if (isSameCoordinates(h1, segment)) return Player.PLAYER_2;
@@ -128,33 +129,47 @@ function App() {
     newSnake1.unshift(head1);
     newSnake2.unshift(head2);
 
-    // Food logic
-    // Snake 1 food
+    // --- Refactored Food and Movement Logic ---
+    let snake1Grew = false;
+    let snake1Shrunk = false;
     if (isSameCoordinates(head1, food1)) {
-        setFood1(generateRandomFoodPosition(newSnake1, newSnake2));
+      snake1Grew = true;
+      setFood1(generateRandomFoodPosition(newSnake1, newSnake2));
     } else if (isSameCoordinates(head1, food2)) {
-        if(newSnake1.length > 2) newSnake1.pop();
-        newSnake1.pop();
-        setFood2(generateRandomFoodPosition(newSnake1, newSnake2));
-    } else {
-        newSnake1.pop();
+      snake1Shrunk = true;
+      setFood2(generateRandomFoodPosition(newSnake1, newSnake2));
     }
-    
-    // Snake 2 food
+
+    let snake2Grew = false;
+    let snake2Shrunk = false;
     if (isSameCoordinates(head2, food2)) {
-        setFood2(generateRandomFoodPosition(newSnake1, newSnake2));
+      snake2Grew = true;
+      setFood2(generateRandomFoodPosition(newSnake1, newSnake2));
     } else if (isSameCoordinates(head2, food1)) {
-        if(newSnake2.length > 2) newSnake2.pop();
-        newSnake2.pop();
-        setFood1(generateRandomFoodPosition(newSnake1, newSnake2));
-    } else {
-        newSnake2.pop();
+      snake2Shrunk = true;
+      setFood1(generateRandomFoodPosition(newSnake1, newSnake2));
     }
+
+    // Apply movement, growth, or shrinkage
+    if (!snake1Grew) {
+      newSnake1.pop(); // Standard move pop
+    }
+    if (snake1Shrunk && newSnake1.length > 0) {
+      newSnake1.pop(); // Penalty pop
+    }
+
+    if (!snake2Grew) {
+      newSnake2.pop(); // Standard move pop
+    }
+    if (snake2Shrunk && newSnake2.length > 0) {
+      newSnake2.pop(); // Penalty pop
+    }
+    // --- End of Refactored Logic ---
     
-    if (newSnake1.length === 0) {
+    if (newSnake1.length < 1) {
         setWinner(Player.PLAYER_2);
         setGameState(GameState.GAME_OVER);
-    } else if(newSnake2.length === 0){
+    } else if(newSnake2.length < 1){
         setWinner(Player.PLAYER_1);
         setGameState(GameState.GAME_OVER);
     } else {

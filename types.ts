@@ -1,4 +1,5 @@
 
+
 export interface Coordinates {
   x: number;
   y: number;
@@ -20,4 +21,5 @@ export enum GameState {
 export enum Player {
     PLAYER_1 = 'Player 1',
     PLAYER_2 = 'Player 2',
+    TIE = "It's a Tie!",
 }
